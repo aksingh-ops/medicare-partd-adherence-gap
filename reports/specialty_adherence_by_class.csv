@@ -1,0 +1,25 @@
+rank,specialty,drug_class,cms_measure_code,tot_benes,tot_30day_fills,adherence_proxy,gap_from_threshold,below_threshold,vs_class_avg,outreach_priority
+1,Emergency Medicine,diabetes,D08,207142,1503458,7.26,2.34,1,-2.21,Priority 1 — Highest risk
+2,General Practice,diabetes,D08,508918,4211865,8.28,1.32,1,-1.19,Priority 1 — Highest risk
+3,Physician Assistant,diabetes,D08,928904,8155958,8.78,0.82,1,-0.69,Priority 1 — Highest risk
+4,Nurse Practitioner,diabetes,D08,1430565,13392405,9.36,0.24,1,-0.1,Priority 2 — Elevated risk
+5,Family Medicine,diabetes,D08,3203555,31175181,9.73,-0.13,0,0.27,Priority 2 — Elevated risk
+6,Geriatric Medicine,diabetes,D08,911253,9313435,10.22,-0.62,0,0.76,Priority 2 — Elevated risk
+7,Internal Medicine,diabetes,D08,2214694,23439785,10.58,-0.98,0,1.12,Priority 3 — Standard
+8,Endocrinology,diabetes,D08,824026,9484236,11.51,-1.91,0,2.04,Priority 3 — Standard
+1,General Practice,ras_antagonist,D09,207522,1878290,9.05,0.55,1,-1.13,Priority 1 — Highest risk
+2,Physician Assistant,ras_antagonist,D09,725832,6848549,9.44,0.16,1,-0.74,Priority 1 — Highest risk
+3,Nurse Practitioner,ras_antagonist,D09,1195477,11574942,9.68,-0.08,0,-0.5,Priority 1 — Highest risk
+4,Geriatric Medicine,ras_antagonist,D09,768438,7725647,10.05,-0.45,0,-0.13,Priority 2 — Elevated risk
+5,Family Medicine,ras_antagonist,D09,2804674,28633454,10.21,-0.61,0,0.03,Priority 2 — Elevated risk
+6,Internal Medicine,ras_antagonist,D09,2440183,25829218,10.59,-0.99,0,0.41,Priority 2 — Elevated risk
+7,Nephrology,ras_antagonist,D09,678540,7478439,11.02,-1.42,0,0.84,Priority 3 — Standard
+8,Cardiology,ras_antagonist,D09,1204954,13737750,11.4,-1.8,0,1.22,Priority 3 — Standard
+1,General Practice,statin,D10,194539,1696548,8.72,0.88,1,-1.34,Priority 1 — Highest risk
+2,Physician Assistant,statin,D10,505847,4717961,9.33,0.27,1,-0.74,Priority 1 — Highest risk
+3,Nurse Practitioner,statin,D10,1138628,10811876,9.5,0.1,1,-0.57,Priority 1 — Highest risk
+4,Family Medicine,statin,D10,2849051,27626266,9.7,-0.1,0,-0.37,Priority 2 — Elevated risk
+5,Geriatric Medicine,statin,D10,767213,7775201,10.13,-0.53,0,0.07,Priority 2 — Elevated risk
+6,Internal Medicine,statin,D10,2516878,26511167,10.53,-0.93,0,0.47,Priority 2 — Elevated risk
+7,Endocrinology,statin,D10,616054,6793196,11.03,-1.43,0,0.96,Priority 3 — Standard
+8,Cardiology,statin,D10,1413281,16339640,11.56,-1.96,0,1.5,Priority 3 — Standard

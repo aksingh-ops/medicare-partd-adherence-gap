@@ -1,0 +1,11 @@
+priority_rank,specialty,classes_tracked,avg_proxy,avg_gap,total_benes,benes_at_risk,classes_below_threshold,outreach_recommendation
+1,Emergency Medicine,1,7.26,2.34,207142.0,207142.0,1.0,Priority 1 — Target immediately
+2,General Practice,3,8.68,0.92,910979.0,910979.0,3.0,Priority 1 — Target immediately
+3,Physician Assistant,3,9.18,0.42,2160583.0,2160583.0,3.0,Priority 1 — Target immediately
+4,Nurse Practitioner,3,9.51,0.09,3764670.0,2569193.0,2.0,Priority 2 — Target next quarter
+5,Family Medicine,3,9.88,-0.28,8857280.0,0.0,0.0,Priority 2 — Target next quarter
+6,Geriatric Medicine,3,10.14,-0.54,2446904.0,0.0,0.0,Priority 2 — Target next quarter
+7,Internal Medicine,3,10.57,-0.97,7171755.0,0.0,0.0,Priority 3 — Monitor
+8,Nephrology,1,11.02,-1.42,678540.0,0.0,0.0,Priority 3 — Monitor
+9,Endocrinology,2,11.27,-1.67,1440080.0,0.0,0.0,Priority 3 — Monitor
+10,Cardiology,2,11.48,-1.88,2618235.0,0.0,0.0,Priority 3 — Monitor
