@@ -51,22 +51,20 @@ This project answers all three using publicly available CMS data and pure SQL.
 | RAS Antagonist (D09) | 18 of 51 (35%) | 129K | $48.0M |
 | **Total** | &mdash; | **1.51M** | **$562.4M** |
 
-Sensitivity range: $502M (low, $332/enrollee) to $662M (high, $438/enrollee).
-
 ---
 
-## Project Structure
+## Repository Structure
 
 ```
 medicare-partd-adherence-gap/
 ├── docs/
-│   ├── business_requirements_document.md  # Phase 1 — full BRD
-│   └── exec_summary.md                    # Phase 6 — recommendations
+│   ├── business_requirements_document.md  Phase 1 — full BRD
+│   └── exec_summary.md                    Phase 6 — Go/No-Go recommendation
 ├── sql/
-│   ├── 01_load_and_map.sql                # Data load, suppression handling, drug class mapping
-│   ├── 02_adherence_proxy.sql             # State ranking — CTEs, RANK, NTILE, PERCENT_RANK
-│   ├── 03_revenue_at_risk.sql             # Dollar model — 3-scenario sensitivity, GROUPING SETS
-│   └── 04_specialty_analysis.sql          # Specialty ranking — LAG, DENSE_RANK, priority tiers
+│   ├── 01_load_and_map.sql                Data load, suppression, drug class mapping
+│   ├── 02_adherence_proxy.sql             State ranking — CTEs, RANK, NTILE, PERCENT_RANK
+│   ├── 03_revenue_at_risk.sql             Dollar model — 3-scenario sensitivity
+│   └── 04_specialty_analysis.sql          Specialty ranking — LAG, DENSE_RANK, priority tiers
 ├── reports/
 │   ├── state_adherence_ranking.csv
 │   ├── state_adherence_rankings.png
@@ -79,9 +77,39 @@ medicare-partd-adherence-gap/
 │   ├── specialty_adherence_rankings.png
 │   ├── specialty_priority_matrix.png
 │   └── exec_onepager.png
+├── run_pipeline.py                        One-command pipeline — generates data, SQL, and all charts
 ├── requirements.txt
 └── README.md
 ```
+
+---
+
+## How to Run
+
+```bash
+# Clone the repository
+git clone https://github.com/aksingh-ops/medicare-partd-adherence-gap.git
+cd medicare-partd-adherence-gap
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Run the complete pipeline
+python run_pipeline.py
+```
+
+**That is it. One command.**
+
+`run_pipeline.py` does everything automatically:
+
+1. Generates a synthetic CMS Part D dataset if the real data is not present
+2. Loads the data into DuckDB and maps drug classes (Phase 2 SQL)
+3. Ranks all 51 states by adherence proxy using window functions (Phase 3 SQL)
+4. Quantifies revenue at risk across three scenarios (Phase 4 SQL)
+5. Ranks prescriber specialties by adherence proxy (Phase 5 SQL)
+6. Generates all six charts and saves to `reports/`
+
+All 11 output files appear in `reports/` when complete.
 
 ---
 
@@ -99,39 +127,39 @@ medicare-partd-adherence-gap/
   <tbody>
     <tr>
       <td><strong>1 &mdash; Business Requirements</strong></td>
-      <td>business_requirements_document.md</td>
+      <td>docs/business_requirements_document.md</td>
       <td>BA document</td>
-      <td>Stakeholders, KPI definitions, PDC explained, regulatory context, scope, assumptions — written before any data was touched</td>
+      <td>Stakeholders, KPI definitions, PDC explained, regulatory context, scope &mdash; written before any data was touched</td>
     </tr>
     <tr>
-      <td><strong>2 &mdash; Data Load and Drug Class Mapping</strong></td>
+      <td><strong>2 &mdash; Data Load and Mapping</strong></td>
       <td>sql/01_load_and_map.sql</td>
       <td>DuckDB SQL</td>
-      <td>CMS data loaded, suppressed values handled via COALESCE, 24 generic names mapped to D08/D09/D10 CMS measures, adherence proxy and gap flag computed per row</td>
+      <td>CMS data loaded, suppressed values handled via COALESCE, 24 generic names mapped to D08/D09/D10, adherence proxy computed per row</td>
     </tr>
     <tr>
       <td><strong>3 &mdash; State Adherence Ranking</strong></td>
       <td>sql/02_adherence_proxy.sql</td>
       <td>DuckDB SQL</td>
-      <td>All 51 states ranked per drug class using RANK, NTILE(4), PERCENT_RANK, cumulative SUM OVER; 12 states identified below threshold on all 3 classes simultaneously</td>
+      <td>All 51 states ranked per drug class using RANK, NTILE(4), PERCENT_RANK, cumulative SUM OVER &mdash; 12 states identified below threshold on all 3 classes</td>
     </tr>
     <tr>
       <td><strong>4 &mdash; Revenue-at-Risk Model</strong></td>
       <td>sql/03_revenue_at_risk.sql</td>
       <td>DuckDB SQL</td>
-      <td>$562.4M national risk quantified across 3 scenarios ($332/$372/$438/enrollee); LAG-based cumulative ranking; break-even fill calculation per drug class</td>
+      <td>$562.4M national risk quantified across 3 scenarios ($332/$372/$438/enrollee) &mdash; break-even fill calculation per drug class</td>
     </tr>
     <tr>
       <td><strong>5 &mdash; Specialty Analysis</strong></td>
       <td>sql/04_specialty_analysis.sql</td>
       <td>DuckDB SQL</td>
-      <td>10 prescriber specialties ranked by adherence proxy; LAG for cross-specialty gap; 3-tier outreach priority classification; General Practice and Physician Assistants flagged as Priority 1</td>
+      <td>10 prescriber specialties ranked by adherence proxy &mdash; LAG for cross-specialty gap &mdash; General Practice and Physician Assistants flagged Priority 1</td>
     </tr>
     <tr>
       <td><strong>6 &mdash; Executive Summary</strong></td>
       <td>docs/exec_summary.md</td>
       <td>BA document</td>
-      <td>5 findings, 4 prioritized recommendations with dollar impact, limitations, 6-week action plan. Plain English for pharmacy leadership and finance.</td>
+      <td>5 findings, 4 prioritized recommendations with dollar impact, limitations, 6-week action plan</td>
     </tr>
   </tbody>
 </table>
@@ -180,11 +208,6 @@ medicare-partd-adherence-gap/
       <td>Gap between consecutive specialties in adherence ranking</td>
     </tr>
     <tr>
-      <td>GROUPING SETS / ROLLUP</td>
-      <td>03</td>
-      <td>State + national rollups in a single query pass</td>
-    </tr>
-    <tr>
       <td>COALESCE / NULLIF</td>
       <td>01, 02</td>
       <td>CMS suppressed value handling and divide-by-zero protection</td>
@@ -222,69 +245,22 @@ medicare-partd-adherence-gap/
 
 ---
 
-## Top Priority States
-
-12 states fall below the adherence threshold on **all three** drug classes
-simultaneously — representing the highest-priority targets for pharmacy
-outreach programs:
-
-Mississippi &bull; Louisiana &bull; West Virginia &bull; Alabama &bull;
-Arkansas &bull; Tennessee &bull; Montana &bull; South Carolina &bull;
-Georgia &bull; Arizona &bull; Maryland &bull; Ohio
-
----
-
-## Prescriber Specialty Priorities
-
-| Priority | Specialty | Avg Proxy | Action |
-|---|---|---|---|
-| 1 | Emergency Medicine | 7.26 | Auto-refill at hospital discharge |
-| 1 | General Practice | 8.68 | Immediate outreach program |
-| 1 | Physician Assistants | 9.18 | Immediate outreach program |
-| 2 | Nurse Practitioners | 9.51 | Target next quarter |
-| 3 | Cardiology | 11.48 | Monitor only |
-| 3 | Endocrinology | 11.27 | Monitor only |
-
----
-
-## Regulatory Context
-
-**CMS Star Ratings — Triple-weighted adherence measures (2026):**
-- D08: Medication Adherence for Diabetes Medications — weight 3
-- D09: Medication Adherence for Hypertension (RAS Antagonists) — weight 3
-- D10: Medication Adherence for Cholesterol (Statins) — weight 3
-
-**Financial stakes (KFF, June 2025):**
-- $12.7 billion total quality bonus payments in 2025
-- $372 average bonus per enrollee (range $332&ndash;$438 by plan type)
-- 9.5pp increase in plan enrollment per 1-star rating improvement
-
-**Note on 2026 methodology:** CMS temporarily reduced adherence measures
-from triple-weight to single-weight for measurement year 2026 only.
-Triple-weighting is expected to return in 2027. This analysis uses the
-triple-weight framework applicable to 2022 data and returning in 2027.
-
----
-
 ## Dataset
 
 This project uses a synthetic dataset mirroring the schema and geographic
 adherence distributions of the publicly available CMS Medicare Part D
-Prescribers by Geography and Drug dataset (CY2022).
+Prescribers by Geography and Drug dataset (CY2022). The synthetic data is
+generated automatically by `run_pipeline.py` if the real CMS file is absent.
 
 **To use the real CMS data:**
 
-1. Download from:
-   [data.cms.gov — Medicare Part D Prescribers by Geography and Drug](https://data.cms.gov/provider-summary-by-type-of-service/medicare-part-d-prescribers/medicare-part-d-prescribers-by-geography-and-drug)
+1. Download from: [data.cms.gov — Medicare Part D Prescribers by Geography and Drug](https://data.cms.gov/provider-summary-by-type-of-service/medicare-part-d-prescribers/medicare-part-d-prescribers-by-geography-and-drug)
 2. Place the CSV in the `data/` folder as `partd_geography_drug_2022.csv`
-3. The SQL schema and column names match the real CMS dataset exactly
+3. Run `python run_pipeline.py` — it will use real data automatically
 
 **Key fields:** `Prscrbr_Geo_Desc`, `Prscrbr_Geo_Cd`, `Gnrc_Name`,
 `Brnd_Name`, `Tot_Clms`, `Tot_30day_Fills`, `Tot_Day_Suply`,
 `Tot_Drug_Cst`, `Tot_Benes`, `GE65_Tot_Clms`, `GE65_Tot_30day_Fills`
-
-**Data size:** ~24 million rows (full CY2022 by-provider-and-drug) or
-~300K rows (by-geography-and-drug, used here)
 
 ---
 
@@ -294,62 +270,19 @@ The adherence proxy (`Tot_30day_Fills / Tot_Benes`) is a directional
 estimate, not the official CMS-certified PDC. True PDC requires
 patient-level prescription drug event data available only through
 restricted CMS data access (CCW/ResDAC). This limitation is documented
-in every analysis output and is consistent with how public-data pharmacy
-analytics is conducted industry-wide.
+in every analysis output.
 
 The $372 per-enrollee bonus is a 2025 national average. Actual plan-level
 bonus rates vary by geography, benchmark, and plan type.
-
-The synthetic dataset mirrors real CMS geographic adherence distributions
-(Southern states lower, New England higher) based on published CMS Star
-Ratings performance data. Results are directionally consistent with real
-CMS data patterns.
 
 ---
 
 ## Future Enhancement
 
-A Power BI cloud dashboard layer is planned as a future addition to this
-project. The SQL outputs (`state_adherence_ranking.csv`,
-`state_combined_risk.csv`, `specialty_priority_ranking.csv`) are structured
-for direct import into Power BI Service without transformation. The README
-will be updated with a live dashboard link once published.
-
----
-
-## Setup and Usage
-
-```bash
-# Clone the repository
-git clone https://github.com/aksingh-ops/medicare-partd-adherence-gap.git
-cd medicare-partd-adherence-gap
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Add dataset (see Dataset section above)
-mkdir data
-# place partd_geography_drug_2022.csv in data/
-
-# Run the full pipeline
-python run_pipeline.py
-```
-
-SQL files are executed via DuckDB inside the pipeline script.
-No separate database setup required — DuckDB runs in-process.
-
----
-
-## Industry Relevance
-
-This project directly addresses analytical priorities at:
-**CVS Health** (pharmacy analytics, Star Ratings) &bull;
-**UnitedHealth / Optum** (Medicare Advantage quality) &bull;
-**Elevance Health** (Stars program management) &bull;
-**Humana** (Medicare Advantage analytics) &bull;
-**Cigna / Express Scripts** (PBM adherence programs) &bull;
-**Walgreens** (pharmacy operations, clinical analytics) &bull;
-**McKesson** (specialty pharmacy analytics)
+A Power BI cloud dashboard layer is planned as a future addition.
+The CSV outputs in `reports/` are structured for direct import into
+Power BI Service without transformation. The README will be updated
+with a live dashboard link once published.
 
 ---
 
